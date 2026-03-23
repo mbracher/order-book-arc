@@ -86,14 +86,14 @@ canvas{display:block;cursor:crosshair}
 <div class="toolbar">
   <button class="tb-btn" id="btn-pause">⏸</button>
   <div class="tb-sep"></div>
-  <div class="slider-group"><span class="slider-label">Levels</span><input type="range" id="sl-levels" min="5" max="200" value="150" step="1"><span class="slider-val" id="sl-levels-val">150</span></div>
+  <div class="slider-group"><span class="slider-label">Levels</span><input type="range" id="sl-levels" min="5" max="200" value="200" step="1"><span class="slider-val" id="sl-levels-val">200</span></div>
   <div class="tb-sep"></div>
   <div class="slider-group"><span class="slider-label">Group</span><input type="range" id="sl-group" min="0" max="8" value="4" step="1"><span class="slider-val" id="sl-group-val">1</span></div>
   <div class="tb-sep"></div>
   <!-- Feature toggles -->
   <span class="toggle on" id="tog-mkt" title="Show live market trades"><span class="dot"></span>Trades</span>
-  <span class="toggle" id="tog-side" title="Show buy/sell side indicator"><span class="dot"></span>Side</span>
-  <span class="toggle" id="tog-ice" title="Detect iceberg orders"><span class="dot"></span>Iceberg</span>
+  <span class="toggle on" id="tog-side" title="Show buy/sell side indicator"><span class="dot"></span>Side</span>
+  <span class="toggle on" id="tog-ice" title="Detect iceberg orders"><span class="dot"></span>Iceberg</span>
   <div class="tb-sep"></div>
   <span class="settings-toggle" id="settings-toggle">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15l-5-5h10z"/></svg>Colors
@@ -121,13 +121,13 @@ canvas{display:block;cursor:crosshair}
 
 <script>
 const canvas=document.getElementById('arc-canvas'),ctx=canvas.getContext('2d');
-const REAL_TICK=0.01;let displayTick=1,NUM_LEVELS=150,paused=false;
+const REAL_TICK=0.01;let displayTick=1,NUM_LEVELS=200,paused=false;
 const ARC_GAP_DEG=22,ARC_MAX_LEVELS=8;
 function maxTapeEntries(){return Math.max(12,NUM_LEVELS-ARC_MAX_LEVELS)}
 const GROUP_STEPS=[0.01,0.05,0.1,0.5,1,5,10,50,100];
 
 // Feature flags
-let showMktTrades=true, showSide=false, showIceberg=false;
+let showMktTrades=true, showSide=true, showIceberg=true;
 
 // ── Orders & Trades ──
 let orders=[],tradeCount=0,nextOrderId=1,tradeAnims=[],tradeTape=[];
