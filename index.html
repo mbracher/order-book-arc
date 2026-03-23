@@ -72,6 +72,7 @@ canvas{display:block;cursor:crosshair}
     <span class="logo">Order Book Arc</span>
     <span class="pair">BTC / USDT</span>
     <span class="conn"><span class="conn-dot" id="conn-dot"></span><span id="conn-label">Connecting</span></span>
+    <span style="font-size:10px;color:var(--dim)">Binance</span>
   </div>
   <div class="topbar-right">
     <span class="metric"><span class="label">Bid</span><span class="v-bid" id="best-bid">—</span></span>
@@ -79,12 +80,13 @@ canvas{display:block;cursor:crosshair}
     <span class="metric"><span class="label">Ask</span><span class="v-ask" id="best-ask">—</span></span>
     <span class="metric"><span class="label">Orders</span><span id="orders-count">0</span></span>
     <span class="metric"><span class="label">Trades</span><span id="trades-count" style="color:var(--ask)">0</span></span>
+    <a href="https://github.com/mbracher/order-book-arc" target="_blank" rel="noopener" style="color:var(--dim);text-decoration:none;font-size:11px;transition:color .15s" onmouseover="this.style.color='var(--bright)'" onmouseout="this.style.color='var(--dim)'">GitHub</a>
   </div>
 </div>
 <div class="toolbar">
   <button class="tb-btn" id="btn-pause">⏸</button>
   <div class="tb-sep"></div>
-  <div class="slider-group"><span class="slider-label">Levels</span><input type="range" id="sl-levels" min="5" max="200" value="20" step="1"><span class="slider-val" id="sl-levels-val">20</span></div>
+  <div class="slider-group"><span class="slider-label">Levels</span><input type="range" id="sl-levels" min="5" max="200" value="150" step="1"><span class="slider-val" id="sl-levels-val">150</span></div>
   <div class="tb-sep"></div>
   <div class="slider-group"><span class="slider-label">Group</span><input type="range" id="sl-group" min="0" max="8" value="4" step="1"><span class="slider-val" id="sl-group-val">1</span></div>
   <div class="tb-sep"></div>
@@ -119,7 +121,7 @@ canvas{display:block;cursor:crosshair}
 
 <script>
 const canvas=document.getElementById('arc-canvas'),ctx=canvas.getContext('2d');
-const REAL_TICK=0.01;let displayTick=1,NUM_LEVELS=20,paused=false;
+const REAL_TICK=0.01;let displayTick=1,NUM_LEVELS=150,paused=false;
 const ARC_GAP_DEG=22,ARC_MAX_LEVELS=8;
 function maxTapeEntries(){return Math.max(12,NUM_LEVELS-ARC_MAX_LEVELS)}
 const GROUP_STEPS=[0.01,0.05,0.1,0.5,1,5,10,50,100];
