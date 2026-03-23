@@ -187,35 +187,63 @@ function onAggTrade(d){
   }
 }
 
-// ── Binance Combined WS ──
+// ── Binance Combined WS (diff depth stream + aggTrade) ──
 let rawBids=new Map(),rawAsks=new Map(),midPrice=0,ws=null,wsConnected=false;
+let localBids=new Map(),localAsks=new Map(),lastUpdateId=0,snapshotLoaded=false,depthBuffer=[];
+
+function syncRawFromLocal(){
+  rawBids=new Map(localBids);rawAsks=new Map(localAsks);
+  const bb=localBids.size?Math.max(...localBids.keys()):NaN;
+  const ba=localAsks.size?Math.min(...localAsks.keys()):NaN;
+  if(isFinite(bb)&&isFinite(ba))midPrice=(bb+ba)/2;
+}
+
+function applyDepthUpdate(d){
+  for(const[p,q]of d.b){const pf=parseFloat(p),qf=parseFloat(q);if(qf===0)localBids.delete(pf);else localBids.set(pf,qf)}
+  for(const[p,q]of d.a){const pf=parseFloat(p),qf=parseFloat(q);if(qf===0)localAsks.delete(pf);else localAsks.set(pf,qf)}
+  syncRawFromLocal();
+}
+
+async function fetchSnapshot(){
+  try{
+    const r=await fetch('https://api.binance.com/api/v3/depth?symbol=BTCUSDT&limit=1000');
+    if(!r.ok)return;
+    const d=await r.json();
+    localBids.clear();localAsks.clear();
+    for(const[p,q]of d.bids){const pf=parseFloat(p),qf=parseFloat(q);if(qf>0)localBids.set(pf,qf)}
+    for(const[p,q]of d.asks){const pf=parseFloat(p),qf=parseFloat(q);if(qf>0)localAsks.set(pf,qf)}
+    lastUpdateId=d.lastUpdateId;
+    // Apply buffered diffs that arrived during snapshot fetch
+    for(const evt of depthBuffer){
+      if(evt.u<=lastUpdateId)continue;
+      applyDepthUpdate(evt);
+    }
+    depthBuffer=[];snapshotLoaded=true;
+    syncRawFromLocal();
+  }catch(e){setTimeout(fetchSnapshot,2000)}
+}
+
 function connectBinance(){
   setConn('connecting');
-  // Combined stream: depth + aggTrade
-  ws=new WebSocket('wss://stream.binance.com:9443/stream?streams=btcusdt@depth20@100ms/btcusdt@aggTrade');
-  ws.onopen=()=>{wsConnected=true;setConn('live')};
+  snapshotLoaded=false;depthBuffer=[];localBids.clear();localAsks.clear();
+  ws=new WebSocket('wss://stream.binance.com:9443/stream?streams=btcusdt@depth@100ms/btcusdt@aggTrade');
+  ws.onopen=()=>{wsConnected=true;setConn('live');fetchSnapshot()};
   ws.onmessage=ev=>{try{
     const msg=JSON.parse(ev.data);
     if(msg.stream&&msg.stream.includes('depth')){
-      if(paused||NUM_LEVELS>20)return;
-      const d=msg.data;rawBids.clear();rawAsks.clear();
-      for(const[p,q]of d.bids){const pf=parseFloat(p),qf=parseFloat(q);if(qf>0)rawBids.set(pf,qf)}
-      for(const[p,q]of d.asks){const pf=parseFloat(p),qf=parseFloat(q);if(qf>0)rawAsks.set(pf,qf)}
-      const bb=Math.max(...rawBids.keys()),ba=Math.min(...rawAsks.keys());if(isFinite(bb)&&isFinite(ba))midPrice=(bb+ba)/2;
+      if(paused)return;
+      const d=msg.data;
+      if(!snapshotLoaded){depthBuffer.push(d);return}
+      if(d.u<=lastUpdateId)return;
+      applyDepthUpdate(d);
+      lastUpdateId=d.u;
     }else if(msg.stream&&msg.stream.includes('aggTrade')){
       onAggTrade(msg.data);
     }
   }catch(e){}};
   ws.onclose=()=>{wsConnected=false;setConn('disconnected');setTimeout(connectBinance,3000)};
   ws.onerror=()=>setConn('error');
-  startRest();
 }
-let restT=null;function startRest(){if(restT)clearInterval(restT);restT=setInterval(pollRest,500)}
-async function pollRest(){if(paused||NUM_LEVELS<=20)return;let lim=50;if(NUM_LEVELS>50)lim=100;if(NUM_LEVELS>100)lim=500;
-  try{const r=await fetch(`https://api.binance.com/api/v3/depth?symbol=BTCUSDT&limit=${lim}`);if(!r.ok)return;const d=await r.json();
-    rawBids.clear();rawAsks.clear();for(const[p,q]of d.bids){const pf=parseFloat(p),qf=parseFloat(q);if(qf>0)rawBids.set(pf,qf)}
-    for(const[p,q]of d.asks){const pf=parseFloat(p),qf=parseFloat(q);if(qf>0)rawAsks.set(pf,qf)}
-    const bb=Math.max(...rawBids.keys()),ba=Math.min(...rawAsks.keys());if(isFinite(bb)&&isFinite(ba))midPrice=(bb+ba)/2}catch(e){}}
 function setConn(s){const d=document.getElementById('conn-dot'),l=document.getElementById('conn-label');
   d.className='conn-dot';if(s==='live'){d.classList.add('live');l.textContent='Live'}
   else if(s==='error'||s==='disconnected'){d.classList.add('err');l.textContent='Reconnecting…'}

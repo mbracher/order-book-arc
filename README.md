@@ -1,6 +1,6 @@
 # Order Book Arc
 
-A real-time order book visualizer that maps every price level to a fixed color on a 360-degree hue wheel -- so you can track price movement, depth shifts, and fills visually without reading a single number. The book is rendered as an interactive half-circle arc with bids fanning left and asks fanning right. Displays live BTC/USDT data from Binance using a hybrid approach: trades stream via WebSocket, while order book depth is fetched via WebSocket (up to 20 levels) or REST polling (for deeper views up to 200 levels).
+A real-time order book visualizer that maps every price level to a fixed color on a 360-degree hue wheel -- so you can track price movement, depth shifts, and fills visually without reading a single number. The book is rendered as an interactive half-circle arc with bids fanning left and asks fanning right. Streams live BTC/USDT data from the Binance WebSocket API using the diff depth stream for real-time order book updates at any depth level.
 
 **[Live Demo](https://order-book-arc.vercel.app)**
 
