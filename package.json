@@ -1,0 +1,7 @@
+{
+  "name": "order-book-arc",
+  "version": "0.1.0",
+  "description": "Real-time order book visualizer rendered as an interactive arc",
+  "license": "(MIT OR Apache-2.0)",
+  "private": false
+}

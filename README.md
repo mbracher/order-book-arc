@@ -2,6 +2,8 @@
 
 A real-time order book visualizer that maps every price level to a fixed color on a 360-degree hue wheel -- so you can track price movement, depth shifts, and fills visually without reading a single number. The book is rendered as an interactive half-circle arc with bids fanning left and asks fanning right. Built for BTC/USDT with simulated market data, designed to be plugged into live exchange WebSocket feeds.
 
+![Demo](docs/order-book-arc-demo.gif)
+
 ## Features
 
 - **Arc visualization** -- order book depth rendered as colored wedges fanning out from a central spread gap
@@ -28,6 +30,12 @@ Deploy to [Vercel](https://vercel.com) by importing the repo -- it auto-detects 
 
 - [Product Owner Guide](docs/product-owner-guide.md) -- trading concepts and feature walkthrough
 - [UX Developer Spec](docs/ux-spec.md) -- layout, rendering, and interaction specification
+
+## Built with Claude
+
+This project was developed entirely through conversation with [Claude](https://claude.ai) by Anthropic -- from the original sketch below to the final interactive prototype. The product owner guide, UX spec, and all code were generated collaboratively using Claude.
+
+![Original sketch](docs/order-book-arc-sketch.png)
 
 ## License
 
