@@ -1,6 +1,6 @@
 # Order Book Arc
 
-A real-time order book visualizer that maps every price level to a fixed color on a 360-degree hue wheel -- so you can track price movement, depth shifts, and fills visually without reading a single number. The book is rendered as an interactive half-circle arc with bids fanning left and asks fanning right. Streams live BTC/USDT data from the Binance WebSocket API.
+A real-time order book visualizer that maps every price level to a fixed color on a 360-degree hue wheel -- so you can track price movement, depth shifts, and fills visually without reading a single number. The book is rendered as an interactive half-circle arc with bids fanning left and asks fanning right. Displays live BTC/USDT data from Binance using a hybrid approach: trades stream via WebSocket, while order book depth is fetched via WebSocket (up to 20 levels) or REST polling (for deeper views up to 200 levels).
 
 **[Live Demo](https://order-book-arc.vercel.app)**
 
@@ -10,10 +10,12 @@ A real-time order book visualizer that maps every price level to a fixed color o
 
 - **Arc visualization** -- order book depth rendered as colored wedges fanning out from a central spread gap
 - **Hue-mapped pricing** -- each price level maps to a fixed position on a 360-degree color wheel, so you can track price movement visually without reading numbers
+- **Color modes** -- Rainbow, Golden, Warm, Cool, and Neon palettes with adjustable variation and saturation
 - **Order placement** -- click the arc or use the manual entry panel to place buy/sell limit orders
 - **Order tracking** -- open orders shown as triangle markers; fills trigger animated trade indicators
 - **Times & Sales tape** -- scrolling list of recent trades with side, price, and size
-- **Adjustable controls** -- pause/play, speed (0.5x/1x/3x), depth levels (10/15/20), tick grouping (0.05/0.10/0.25)
+- **Feature toggles** -- Trades (live market trades), Side (buy/sell indicator), Iceberg (iceberg order detection)
+- **Adjustable controls** -- pause/play, depth levels (5--200 continuous slider), tick grouping (0.01--100 across 9 steps)
 
 ## Getting Started
 
